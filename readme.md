@@ -77,6 +77,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
     }
 ```
 :loudspeaker:：EazyPageQuery默认按照查询实体属性名与目标实体属性名进行匹配然后筛选，如果实体属性名与目标属性名不同，请使用`[QueryFor]`特性显示标注。
+
 :loudspeaker:：请注意查询实体所有属性最好都是**可为空**(`Nullable`)的类型，这样如果查询实体类属性为`NULL`，EazyPageQuery才能忽略此属性而不进行过滤。
 ### 2.过滤查询
 如下所示，将查询所有`ClassId == 1`的学生，
@@ -180,7 +181,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
     }
 ```
 ### 5.分页查询
-:pushpin::PageQuery类为所有分页查询实体类的基类，需要支持分页查询的查询实体类，请继承PageQuery基类，PageQuery结构如下：
+:pushpin:：PageQuery类为所有分页查询实体类的基类，需要支持分页查询的查询实体类，请继承PageQuery基类，PageQuery结构如下：
 ```C#
     public class PageQuery:IQuery,IOrder
     {
