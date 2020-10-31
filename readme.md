@@ -1,6 +1,11 @@
+# 目录
+***
+[TOC]
+***
 # EazyPageQuery（中文文档）
 
 Create The Page-Query Command easily For EntityFramework and EF Core!
+
 ## 特点
 - 简单使用，只需使用几个特性便可，无需任何配置类。
 - 方便扩展，对原有代码入侵性小。
