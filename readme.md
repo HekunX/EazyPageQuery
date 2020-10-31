@@ -42,7 +42,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 ```
 ### 2.创建一个数据仓储
 ```C#
-    public static class DataStore
+    public static class DataStore:IQuery
     {
         public static List<Student> CreaetStudents() => Create();
         static List<Student> Create()
