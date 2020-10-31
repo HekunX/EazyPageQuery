@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ConsoleApp1
 {
-    public class StudentPaegQuery:PageQuery
+    public class StudentPageQuery:PageQuery
     {
         [OrderBy(Order = 0, OrderType = OrderType.Ascending)]
         public int? Id { get; set; }
