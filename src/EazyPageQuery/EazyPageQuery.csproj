@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageIcon>logo.png</PackageIcon>
+    <Description>Create a page-query command easily for EF!</Description>
+    <Version>1.0.0-alpha</Version>
+    <PackageTags>Page-Qeury;EF</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EazyPageQuery.Basic\EazyPageQuery.Basic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\EazyPageQuery.Basic\pic\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

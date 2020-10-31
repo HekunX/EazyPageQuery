@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageIcon>logo.png</PackageIcon>
+    <Authors>Eazy</Authors>
+    <Product>Eazy</Product>
+    <Description>The EazyPageQuery basic library</Description>
+    <PackageTags>PageQuery</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Version>1.0.1-alpha</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="pic\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="pic\logo.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
