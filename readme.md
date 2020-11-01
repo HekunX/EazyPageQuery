@@ -264,7 +264,38 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 ```
 其中`Total`属性表明总共有多少条符合条件的数据，`PageSize`表示当前页大小，`CurrentPage`表示当前页号，`Rows`表示当前页的数据。
 ### 6.动态排序分页查询
-文档待补充......
+在查询实体类中添加一个布尔类型的属性，并添加`[OrderChoice]`特性。举个例子，如果学生号支持动态排序，则在查询实体类中添加Id==IsAsc==属性，注意命名规则，默认情况下，这个属性应由{目标属性名}IsAsc组成，若想更换默认后缀，使用Core.Suffix属性设置，或者直接使用`[QueryFor]`特性显示指明目标属性名。
+:pushpin:：按照约定，如果该属性值为`TRUE`，则按照该字段升序排列，否则，降序排列。
+
+如下所示：
+```C#
+    public class StudentPageQuery:PageQuery
+    {
+        public int? Id { get; set; }
+        public int? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+        [Like]
+        public string Address { get; set; }
+        [OrderChoice]
+        public bool IdIsAsc { get; set; }
+    }
+```
+使用该查询实体类创建查询对象，结果将按照`Id`降序排列。
+```C#
+    static void Main(string[] args)
+    {
+        List<Student> students = DataStore.CreaetStudents();
+        StudentPageQuery studentPageQuery = new StudentPageQuery
+        {
+            PageSize = 10,
+            CurrentPage = 1,
+            IdIsAsc = false
+        };
+        Page<Student> page = students.AsQueryable().PageQeury(studentPageQuery);
+    }
+```
 # 作者
 白烟染黑墨
 邮箱：935467953@qq.com

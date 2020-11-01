@@ -14,7 +14,8 @@ namespace ConsoleApp1
             StudentPageQuery studentPageQuery = new StudentPageQuery
             {
                 PageSize = 10,
-                CurrentPage = 2,
+                CurrentPage = 1,
+                IdIsAsc = false
             };
             Page<Student> page = students.AsQueryable().PageQeury(studentPageQuery);
         }
