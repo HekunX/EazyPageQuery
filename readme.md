@@ -29,7 +29,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 在Nuget包管理器上搜索`EazyPageQuery`，然后安装即可。
 | NuGet |
 |--|
-|[![](https://img.shields.io/nuget/v/EazyPageQuery.svg)](https://www.nuget.org/packages/EazyPageQuery)|
+|[![](https://img.shields.io/nuget/v/EazyPageQuery)](https://www.nuget.org/packages/EazyPageQuery)|
 ### 1.首先创建一个实体类
 ```C#
     public class Student
