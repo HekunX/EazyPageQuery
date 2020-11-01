@@ -13,7 +13,8 @@
     - [4.多重排序查询](#4多重排序查询)
     - [5.模糊查询](#5模糊查询)
     - [5.分页查询](#5分页查询)
-  - [作者](#作者)
+    - [6.动态排序分页查询](#6动态排序分页查询)
+- [作者](#作者)
 ***
 # EazyPageQuery（中文文档）
 
@@ -42,7 +43,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 ```
 ### 2.创建一个数据仓储
 ```C#
-    public static class DataStore:IQuery
+    public static class DataStore
     {
         public static List<Student> CreaetStudents() => Create();
         static List<Student> Create()
@@ -262,6 +263,8 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
     }
 ```
 其中`Total`属性表明总共有多少条符合条件的数据，`PageSize`表示当前页大小，`CurrentPage`表示当前页号，`Rows`表示当前页的数据。
-## 作者
+### 6.动态排序分页查询
+文档待补充......
+# 作者
 白烟染黑墨
 邮箱：935467953@qq.com
