@@ -10,6 +10,7 @@ namespace EazyPageQuery
 {
     public static class  Core
     {
+        public static string Suffix = "IsAsc";
         /// <summary>
         /// 把TQuery对象中需要筛选的字段转换成Where表达式树
         /// </summary>
@@ -29,6 +30,7 @@ namespace EazyPageQuery
             foreach(var queryProp in queryPropertyInfos)
             {
                 if (queryProp.IsDefined(typeof(NoQueryAttribute)) || queryProp.GetValue(query) == null) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
+                if (queryProp.IsDefined(typeof(OrderChoiceAttribute))) continue;
 
                 if (queryProp.IsDefined(typeof(QueryForAttribute)))                                         //如果显示指定了要筛选的字段
                 {
@@ -68,6 +70,7 @@ namespace EazyPageQuery
             public int Order;
             public OrderType OrderType;
             public PropertyInfo PropertyInfo;
+            public OrderInfo() { }
             public OrderInfo(int order,OrderType orderType,PropertyInfo propertyInfo)
             {
                 Order = order;
@@ -82,25 +85,48 @@ namespace EazyPageQuery
             PropertyInfo[] queryPropertyInfos = queryType.GetProperties(), destinationPropertyinfos = destinationType.GetProperties();
             List<OrderInfo> orderPropInfos = new List<OrderInfo>();
 
-            Expression expression = Expression.Constant(source);
-
             foreach (var queryProp in queryPropertyInfos)
             {
-                if(queryProp.IsDefined(typeof(OrderByAttribute)))
+                if (queryProp.IsDefined(typeof(NoQueryAttribute))) continue;
+                OrderInfo orderInfo = new OrderInfo();
+                bool CanChoice = false;
+                if (queryProp.IsDefined(typeof(OrderByAttribute)))
                 {
                     var orderAttr = queryProp.GetCustomAttribute<OrderByAttribute>();
-                    PropertyInfo desProp;
-                    if (queryProp.IsDefined(typeof(QueryForAttribute)))
-                    {
-                        var attr = queryProp.GetCustomAttribute<QueryForAttribute>();
-                        desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == attr.Name);
-                        if (desProp is null) ExceptionHelper.ThrowPropertyNotFound(attr.Name);
-                    }
-                    else desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name);
-
-                    if (desProp is null) ExceptionHelper.ThrowPropertyNotFound(queryProp.Name);
-                    orderPropInfos.Add(new OrderInfo(orderAttr.Order, orderAttr.OrderType, desProp));
+                    orderInfo.Order = orderAttr.Order;
+                    orderInfo.OrderType = orderAttr.OrderType;
                 }
+                else if (queryProp.IsDefined(typeof(OrderChoiceAttribute)))
+                {
+                    //Check value if it is bool
+                    if (queryProp.PropertyType != typeof(bool)) ExceptionHelper.ThrowPropertyTypeError($"The {queryProp.Name} Property type is not bool,Please fix it or remove OrderChoiceAttribute.");
+                    var choiceOrderAttr = queryProp.GetCustomAttribute<OrderChoiceAttribute>();
+                    orderInfo.Order = choiceOrderAttr.Order;
+                    //If value is true than order type is Ascending otherwise descending
+                    orderInfo.OrderType = (bool)queryProp.GetValue(query) ? OrderType.Ascending : OrderType.Descending;
+                    CanChoice = true;
+                }
+                else continue;
+
+                PropertyInfo desProp;
+                if (queryProp.IsDefined(typeof(QueryForAttribute)))
+                {
+                    var attr = queryProp.GetCustomAttribute<QueryForAttribute>();
+                    desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == attr.Name);
+                    if (desProp is null) ExceptionHelper.ThrowPropertyNotFound(attr.Name);
+                }
+                else if(CanChoice)
+                {
+                    //Check the name if it is end with suffix string.
+                    if (!queryProp.Name.EndsWith(Suffix)) ExceptionHelper.ThrowPropertyNameError($"the property name do not end with suffix string '{Suffix}',please correct it or  using Core.Suffix to  change the suffix string.");
+                    desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name.TrimEnd(Suffix.ToArray()));
+                }
+                else desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name);
+
+                if (desProp is null) ExceptionHelper.ThrowPropertyNotFound(queryProp.Name);
+
+                orderInfo.PropertyInfo = desProp;
+                orderPropInfos.Add(orderInfo);
             }
 
             //按指定的顺序排序

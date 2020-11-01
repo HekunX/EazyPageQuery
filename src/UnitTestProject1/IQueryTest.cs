@@ -201,5 +201,17 @@ namespace UnitTestProject1
 
             Assert.IsTrue(page.Total == 2 && page.Rows.All(x => x.Address.Contains("ºþ±±")));
         }
+
+        [TestMethod]
+        public void ChoiceOrderTest()
+        {
+            ChoiceOrderQuery choiceOrderQuery = new ChoiceOrderQuery
+            {
+                SeatIdIsAsc = false
+            };
+            var students = DataStore.CreaetStudents();
+            var page = students.AsQueryable().PageQeury(choiceOrderQuery);
+            Assert.IsTrue(page.Rows.Count == 3 && page.Total == 3 && page.Rows[0].SeatId == 2);
+        }
     }
 }

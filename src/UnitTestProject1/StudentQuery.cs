@@ -98,4 +98,19 @@ namespace UnitTestProject1
         [Like]
         public string Address { get; set; }
     }
+
+
+    public class ChoiceOrderQuery : PageQuery
+    {
+        [QueryFor("Id")]
+        public int? StudentId { get; set; }
+        public int? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+        [Like]
+        public string Address { get; set; }
+        [OrderChoice(Order = 0)]
+        public bool SeatIdIsAsc { get; set; }
+    }
 }
