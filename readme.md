@@ -23,6 +23,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 ## 特点
 - 简单使用，只需使用几个特性便可，无需任何配置类。
 - 方便扩展，对原有代码入侵性小。
+- 只需一个查询实体类，便可快速生成分页查询接口，支持模糊查询、排序查询、多重排序查询，动态排序查询。
   
 ## 开始使用
 在Nuget包管理器上搜索`EazyPageQuery`，然后安装即可。
@@ -265,6 +266,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 其中`Total`属性表明总共有多少条符合条件的数据，`PageSize`表示当前页大小，`CurrentPage`表示当前页号，`Rows`表示当前页的数据。
 ### 6.动态排序分页查询
 在查询实体类中添加一个布尔类型的属性，并添加`[OrderChoice]`特性。举个例子，如果学生号支持动态排序，则在查询实体类中添加Id==IsAsc==属性，注意命名规则，默认情况下，这个属性应由{目标属性名}IsAsc组成，若想更换默认后缀，使用Core.Suffix属性设置，或者直接使用`[QueryFor]`特性显示指明目标属性名。
+
 :pushpin:：按照约定，如果该属性值为`TRUE`，则按照该字段升序排列，否则，降序排列。
 
 如下所示：
