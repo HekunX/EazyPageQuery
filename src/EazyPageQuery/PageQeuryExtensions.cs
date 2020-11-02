@@ -25,7 +25,7 @@ namespace EazyPageQuery
 
             var exp = source.Where(query);
             var totalCount = exp.Count();
-            var rows = exp.Skip((query.CurrentPage - 1) * query.PageSize).Take(query.PageSize).OrderBy(query).ToList();
+            var rows = exp.OrderBy(query).Skip((query.CurrentPage - 1) * query.PageSize).Take(query.PageSize).ToList();
             return new Page<T>(query,rows, totalCount);
         }
     }
