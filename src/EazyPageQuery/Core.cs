@@ -182,7 +182,7 @@ namespace EazyPageQuery
               .MakeGenericMethod(TSource, TKey);
 
         private static MethodInfo _orderByDescMethodInfo;
-        public static MethodInfo GetOrderByDescMethodInfo(Type TSource, Type TKey) =>
+        private static MethodInfo GetOrderByDescMethodInfo(Type TSource, Type TKey) =>
          (_orderByDescMethodInfo ??
          (_orderByDescMethodInfo = new Func<IQueryable<object>, Expression<Func<object, object>>, IOrderedQueryable<object>>(Queryable.OrderByDescending).GetMethodInfo().GetGenericMethodDefinition()))
           .MakeGenericMethod(TSource, TKey);
