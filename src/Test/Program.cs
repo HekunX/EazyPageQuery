@@ -57,8 +57,8 @@ namespace Test
                 Id = 1,
                 Name = "f"
             };
-            var res = tests.AsQueryable().PageQeury(query);
-             res = tests.AsQueryable().PageQeury(query);
+            var res = tests.AsQueryable().PageQuery(query);
+             res = tests.AsQueryable().PageQuery(query);
         }
     }
 }

@@ -124,7 +124,7 @@ namespace UnitTestProject1
                 Address = "ºþÄÏºâÑô"
             };
             var students = DataStore.CreaetStudents();
-            var page = students.AsQueryable().PageQeury(studentPageQuery);
+            var page = students.AsQueryable().PageQuery(studentPageQuery);
             Assert.IsTrue(page.CurrentPage == 1 && page.PageSize == 10 && page.Total == 1 && page.Rows[0].Address == "ºþÄÏºâÑô");
         }
 
@@ -160,7 +160,7 @@ namespace UnitTestProject1
             var students = DataStore.CreaetStudents();
             try
             {
-                var stu = students.AsQueryable().PageQeury(studentPageQuery);
+                var stu = students.AsQueryable().PageQuery(studentPageQuery);
             }
             catch (ArgumentException e)
             {
@@ -180,7 +180,7 @@ namespace UnitTestProject1
             var students = DataStore.CreaetStudents();
             try
             {
-                var stu = students.AsQueryable().PageQeury(studentPageQuery);
+                var stu = students.AsQueryable().PageQuery(studentPageQuery);
             }
             catch (ArgumentException e)
             {
@@ -197,7 +197,7 @@ namespace UnitTestProject1
                 Address = "ºþ±±"
             };
             var students = DataStore.CreaetStudents();
-            var page = students.AsQueryable().PageQeury(likeQuery);
+            var page = students.AsQueryable().PageQuery(likeQuery);
 
             Assert.IsTrue(page.Total == 2 && page.Rows.All(x => x.Address.Contains("ºþ±±")));
         }
@@ -210,7 +210,7 @@ namespace UnitTestProject1
                 SeatIdIsAsc = false
             };
             var students = DataStore.CreaetStudents();
-            var page = students.AsQueryable().PageQeury(choiceOrderQuery);
+            var page = students.AsQueryable().PageQuery(choiceOrderQuery);
             Assert.IsTrue(page.Rows.Count == 3 && page.Total == 3 && page.Rows[0].SeatId == 2);
         }
     }
