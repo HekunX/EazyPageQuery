@@ -18,52 +18,54 @@ namespace EazyPageQuery
         /// <typeparam name="TQuery"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        internal static Expression<Func<T, bool>> TranslateWhere<T, TQuery>(TQuery query) where TQuery:IQuery
+        internal static IQueryable<TSource> TranslateWhere<TSource, TQuery>(this IQueryable<TSource> sources,TQuery query) where TQuery : IQuery
         {
-            Type queryType = typeof(TQuery), destinationType = typeof(T);
+            Type queryType = typeof(TQuery), destinationType = typeof(TSource);
             PropertyInfo[] queryPropertyInfos = queryType.GetProperties(), destinationPropertyinfos = destinationType.GetProperties();
 
             //x => { x.p1 == query.p1 && x.p2 == query.p2 && ....... } 中的参数节点
-            ParameterExpression parameterExpression = Expression.Parameter(typeof(T), "x");
+            ParameterExpression parameterExpression = Expression.Parameter(typeof(TSource), "x");
             Expression conditionExp = Expression.Constant(true);
             //接下来构造{} lambda表达式树节点
-            foreach(var queryProp in queryPropertyInfos)
+            foreach (var queryProp in queryPropertyInfos)
             {
                 if (queryProp.IsDefined(typeof(NoQueryAttribute)) || queryProp.GetValue(query) == null) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
                 if (queryProp.IsDefined(typeof(OrderChoiceAttribute))) continue;
 
+                PropertyInfo desProp = null;
                 if (queryProp.IsDefined(typeof(QueryForAttribute)))                                         //如果显示指定了要筛选的字段
                 {
                     var attr = queryProp.GetCustomAttribute<QueryForAttribute>();
-                    var desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == attr.Name) ?? throw new PropertyNotFoundException(attr.Name);
+                    desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == attr.Name) ?? throw new PropertyNotFoundException(attr.Name);
+                }
 
-                    var leftExp = Expression.Property(parameterExpression, desProp);                                                 //x.desProp
-                    var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp),desProp.PropertyType);                                //query.queryProp
-                    var predicate = Expression.Equal(leftExp, rightExp);                                                                    //x.desProp == query.queryProp
-                    conditionExp = Expression.AndAlso(predicate, conditionExp);                                                   //  x.desProp == query.queryProp && 之前的表达式
+
+                if (queryProp.IsDefined(typeof(LikeAttribute)))
+                {
+                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    var p = Expression.Call(Expression.Property(parameterExpression, desProp), "Contains", new Type[] { }, Expression.Property(Expression.Constant(query), queryProp));
+                    conditionExp = Expression.AndAlso(p, conditionExp);
+                }
+                else if (queryProp.IsDefined(typeof(EXISTSINAttribute)))
+                {
+                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name.TrimEnd('s'));
+                    if (desProp is null) ExceptionHelper.ThrowPropertyNameError($"the '{queryProp.Name}s' can not be found in the target object!");
+                    //var p = Expression.Call(Expression.Property(Expression.Constant(query), queryProp), "Contains", new Type[] { }, Expression.Property(parameterExpression, desProp));
+                    var p = Expression.Call(null,GetContainsMethodInfoInEnumerabl(desProp.PropertyType), Expression.Property(Expression.Constant(query),queryProp),Expression.Property(parameterExpression, desProp));
+                    conditionExp = Expression.AndAlso(p, conditionExp);
                 }
                 else
                 {
-                    var desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
-                    if (desProp != null)
-                    {
-                        if (queryProp.IsDefined(typeof(LikeAttribute)))
-                        {
-                            var p = Expression.Call(Expression.Property(parameterExpression, desProp), "Contains", new Type[] { }, Expression.Property(Expression.Constant(query), queryProp));
-                            conditionExp = Expression.AndAlso(p, conditionExp);
-                            continue;
-                        }
-                        var leftExp = Expression.Property(parameterExpression, desProp);                                                 //x.desProp
-                        var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp), desProp.PropertyType);                                //query.queryProp
-                        var predicate = Expression.Equal(leftExp, rightExp);                                                                    //x.desProp == query.queryProp
-                        conditionExp = Expression.AndAlso(predicate, conditionExp);                                                   //  x.desProp == query.queryProp && 之前的表达式
-                    }
+                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    var leftExp = Expression.Property(parameterExpression, desProp);
+                    var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp), desProp.PropertyType);
+                    var predicate = Expression.Equal(leftExp, rightExp);
+                    conditionExp = Expression.AndAlso(predicate, conditionExp);
                 }
             }
-
-            var exp = Expression.Lambda<Func<T, bool>>(conditionExp, parameterExpression);
-            return exp;
-        } 
+            var exp = Expression.Lambda<Func<TSource, bool>>(conditionExp, parameterExpression);
+            return sources.Where(exp);
+        }
 
         private  sealed class OrderInfo
         {
@@ -78,7 +80,7 @@ namespace EazyPageQuery
                 PropertyInfo = propertyInfo;
             }
         }
-
+    
         internal static IOrderedQueryable<T> TranslateOrder<T,TQuery>(IQueryable<T> source,TQuery query) where TQuery:IOrder
         {
             Type queryType = typeof(TQuery), destinationType = typeof(T);
@@ -187,6 +189,11 @@ namespace EazyPageQuery
          (_orderByDescMethodInfo = new Func<IQueryable<object>, Expression<Func<object, object>>, IOrderedQueryable<object>>(Queryable.OrderByDescending).GetMethodInfo().GetGenericMethodDefinition()))
           .MakeGenericMethod(TSource, TKey);
 
+        private static MethodInfo _containsMethodInfo;
+
+        private static MethodInfo GetContainsMethodInfoInEnumerabl(Type TSource) => 
+            _containsMethodInfo ??
+            (_containsMethodInfo = new Func<IEnumerable<object>, object, bool>(Enumerable.Contains).GetMethodInfo().GetGenericMethodDefinition()).MakeGenericMethod(TSource);
 
         private static MethodInfo _thenByMethodInfo;
 

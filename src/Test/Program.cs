@@ -17,9 +17,9 @@ namespace Test
 
     public class TestPageQuery:PageQuery
     {
-        [OrderBy(Order = 0, OrderType = OrderType.Descending)]
+        [EXISTSIN]
+        public List<int> Ids { get; set; }
         public int? Id { get; set; }
-        [OrderBy(Order = 1,OrderType = OrderType.Descending)]
         public int? Id2 { get; set; }
         [Like]
         public string? Name { get; set; }
@@ -51,14 +51,22 @@ namespace Test
                 Id2 = 2,
                 Name = "fyf"
             });
+            tests.Add(new Test
+            {
+                Id = 2,
+                Id2 = 2,
+                Name = "zxc"
+            });
 
             TestPageQuery query = new TestPageQuery
             {
-                Id = 1,
-                Name = "f"
+                Ids = new List<int> { 2},
             };
+
+
             var res = tests.AsQueryable().PageQuery(query);
-             res = tests.AsQueryable().PageQuery(query);
+
+
         }
     }
 }

@@ -11,7 +11,7 @@ namespace EazyPageQuery
     {
         public static IQueryable<T> Where<T, TQuery>(this IQueryable<T> source,TQuery query) where TQuery:IQuery
         {
-            return source.Where(Core.TranslateWhere<T,TQuery>(query));
+            return source.TranslateWhere(query);
         }
 
         public static IQueryable<T> WhereWhen<T>(this IQueryable<T> source, bool condition, Expression<Func<T, bool>> expression) => condition ? source.Where(expression) : source;
