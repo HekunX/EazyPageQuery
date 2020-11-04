@@ -1,4 +1,5 @@
 ﻿using EazyPageQuery.Basic;
+using EazyPageQuery.Basic.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -112,5 +113,57 @@ namespace UnitTestProject1
         public string Address { get; set; }
         [OrderChoice(Order = 0)]
         public bool SeatIdIsAsc { get; set; }
+    }
+
+    public class EXISTSINQuery:PageQuery
+    {
+        [QueryFor("Id")]
+        public int? StudentId { get; set; }
+        [EXISTSIN]
+        public List<int> ClassIds { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+    }
+
+    public class StaticJudgeTypeQuery : PageQuery
+    {
+        [Judge(JudgeType = JudgeType.eq)]
+        public int Id { get; set; }
+        public string? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+    }
+
+
+    public class StaticJudgeTypeQuery_NotFindError : PageQuery
+    {
+        [Judge(JudgeType = JudgeType.eq)]
+        public int ID { get; set; }
+        public string? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+    }
+
+    public class DynamicJudgeTypeQuery: PageQuery
+    {
+        [DynamicJudge]
+        public EazyJudgeValue<int> Id { get; set; }
+        public string? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+    }
+
+    public class ErrorJudgeTypeQuery : PageQuery
+    {
+        [DynamicJudge]
+        public string Id { get; set; }
+        public string? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
     }
 }

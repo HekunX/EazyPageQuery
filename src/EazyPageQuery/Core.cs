@@ -1,4 +1,5 @@
 ﻿using EazyPageQuery.Basic;
+using EazyPageQuery.Basic.QueryModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,34 +30,60 @@ namespace EazyPageQuery
             //接下来构造{} lambda表达式树节点
             foreach (var queryProp in queryPropertyInfos)
             {
-                if (queryProp.IsDefined(typeof(NoQueryAttribute)) || queryProp.GetValue(query) == null) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
+                object queryPropValue = queryProp.GetValue(query);
+                if (queryProp.IsDefined(typeof(NoQueryAttribute)) || (queryProp.CustomAttributes.Count() == 0 && queryPropValue == null)) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
                 if (queryProp.IsDefined(typeof(OrderChoiceAttribute))) continue;
 
                 PropertyInfo desProp = null;
                 if (queryProp.IsDefined(typeof(QueryForAttribute)))                                         //如果显示指定了要筛选的字段
                 {
                     var attr = queryProp.GetCustomAttribute<QueryForAttribute>();
-                    desProp = destinationPropertyinfos.FirstOrDefault(x => x.Name == attr.Name) ?? throw new PropertyNotFoundException(attr.Name);
+                    desProp = Utility.GetPropertyInfo(destinationPropertyinfos,attr.Name) ?? throw new PropertyNotFoundException(attr.Name);
                 }
 
 
                 if (queryProp.IsDefined(typeof(LikeAttribute)))
                 {
-                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    if (queryPropValue is null) continue;
+                    desProp = desProp ?? Utility.GetPropertyInfo(destinationPropertyinfos, queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
                     var p = Expression.Call(Expression.Property(parameterExpression, desProp), "Contains", new Type[] { }, Expression.Property(Expression.Constant(query), queryProp));
                     conditionExp = Expression.AndAlso(p, conditionExp);
                 }
                 else if (queryProp.IsDefined(typeof(EXISTSINAttribute)))
                 {
-                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name.TrimEnd('s'));
+                    ExceptionHelper.ThrowArgNullExceptionIfNull(queryProp.Name, queryPropValue);
+                    desProp = desProp ?? Utility.GetPropertyInfoTrimEnd(destinationPropertyinfos, queryProp.Name,"s");
                     if (desProp is null) ExceptionHelper.ThrowPropertyNameError($"the '{queryProp.Name}s' can not be found in the target object!");
-                    //var p = Expression.Call(Expression.Property(Expression.Constant(query), queryProp), "Contains", new Type[] { }, Expression.Property(parameterExpression, desProp));
+          
                     var p = Expression.Call(null,GetContainsMethodInfoInEnumerabl(desProp.PropertyType), Expression.Property(Expression.Constant(query),queryProp),Expression.Property(parameterExpression, desProp));
                     conditionExp = Expression.AndAlso(p, conditionExp);
                 }
+                else if(queryProp.IsDefined(typeof(JudgeAttribute)))
+                {
+                    ExceptionHelper.ThrowArgNullExceptionIfNull(queryProp.Name, queryPropValue);
+                    JudgeAttribute judgeAttribute = queryProp.GetCustomAttribute<JudgeAttribute>();
+                    desProp = desProp ?? Utility.GetPropertyInfo(destinationPropertyinfos, queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    var leftExp = Expression.Property(parameterExpression, desProp);
+                    var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp), desProp.PropertyType);
+                    conditionExp = Expression.AndAlso(GetJudgeExpression(leftExp,rightExp,judgeAttribute.JudgeType), conditionExp);
+                }
+                else if (queryProp.IsDefined(typeof(DynamicJudgeAttribute)))
+                {
+                    ExceptionHelper.ThrowArgNullExceptionIfNull(queryProp.Name, queryPropValue);
+                    if (!queryProp.PropertyType.IsGenericType || queryProp.PropertyType.GetGenericTypeDefinition() != typeof(EazyJudgeValue<>)) ExceptionHelper.ThrowPropertyTypeError($"property type must be derived from EazyJudgeValue! Your type is {queryProp.PropertyType}");
+                    object eazyValue = queryProp.GetValue(query);
+                    var props = eazyValue.GetType().GetProperties();
+                    JudgeType judgeType = (JudgeType)props.First(x => x.PropertyType == typeof(JudgeType)).GetValue(eazyValue);
+                    object value = props.First(x => x.Name == "Value").GetValue(eazyValue);
+                    desProp = desProp ?? Utility.GetPropertyInfo(destinationPropertyinfos, queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    var leftExp = Expression.Property(parameterExpression, desProp);
+                    var rightExp = Expression.Constant(value);
+                    conditionExp = Expression.AndAlso(GetJudgeExpression(leftExp, rightExp, judgeType), conditionExp);
+                }
                 else
                 {
-                    desProp = desProp ?? destinationPropertyinfos.FirstOrDefault(x => x.Name == queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
+                    if (queryPropValue is null) continue;
+                    desProp = desProp ?? Utility.GetPropertyInfo(destinationPropertyinfos, queryProp.Name) ?? throw new PropertyNotFoundException(queryProp.Name);
                     var leftExp = Expression.Property(parameterExpression, desProp);
                     var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp), desProp.PropertyType);
                     var predicate = Expression.Equal(leftExp, rightExp);
@@ -65,6 +92,38 @@ namespace EazyPageQuery
             }
             var exp = Expression.Lambda<Func<TSource, bool>>(conditionExp, parameterExpression);
             return sources.Where(exp);
+        }
+
+        internal static Expression GetJudgeExpression(Expression leftExp, Expression rightExp, JudgeType judgeType)
+        {
+            Expression predicate;
+            switch (judgeType)
+            {
+                case JudgeType.gt:
+                    predicate = Expression.GreaterThan(leftExp, rightExp);
+                    break;
+                case JudgeType.eq:
+                    predicate = Expression.Equal(leftExp, rightExp);
+                    break;
+                case JudgeType.lt:
+                    predicate = Expression.LessThan(leftExp, rightExp);
+                    break;
+                case JudgeType.le:
+                    predicate = Expression.LessThanOrEqual(leftExp, rightExp);
+                    break;
+                case JudgeType.ne:
+                    predicate = Expression.NotEqual(leftExp, rightExp);
+                    break;
+                case JudgeType.ge:
+                    predicate = Expression.GreaterThanOrEqual(leftExp, rightExp);
+                    break;
+                default:
+                    ExceptionHelper.ThrowNotSupportedError($"Unknow JudgeType {judgeType}");
+                    predicate = null;
+                    break;
+            }
+
+            return predicate;
         }
 
         private  sealed class OrderInfo
@@ -80,6 +139,8 @@ namespace EazyPageQuery
                 PropertyInfo = propertyInfo;
             }
         }
+
+        
     
         internal static IOrderedQueryable<T> TranslateOrder<T,TQuery>(IQueryable<T> source,TQuery query) where TQuery:IOrder
         {
@@ -186,14 +247,16 @@ namespace EazyPageQuery
         private static MethodInfo _orderByDescMethodInfo;
         private static MethodInfo GetOrderByDescMethodInfo(Type TSource, Type TKey) =>
          (_orderByDescMethodInfo ??
-         (_orderByDescMethodInfo = new Func<IQueryable<object>, Expression<Func<object, object>>, IOrderedQueryable<object>>(Queryable.OrderByDescending).GetMethodInfo().GetGenericMethodDefinition()))
+         (_orderByDescMethodInfo = new Func<IQueryable<object>, Expression<Func<object, object>>, IOrderedQueryable<object>>(Queryable.OrderByDescending)
+            .GetMethodInfo().GetGenericMethodDefinition()))
           .MakeGenericMethod(TSource, TKey);
 
         private static MethodInfo _containsMethodInfo;
 
         private static MethodInfo GetContainsMethodInfoInEnumerabl(Type TSource) => 
-            _containsMethodInfo ??
-            (_containsMethodInfo = new Func<IEnumerable<object>, object, bool>(Enumerable.Contains).GetMethodInfo().GetGenericMethodDefinition()).MakeGenericMethod(TSource);
+            (_containsMethodInfo ??
+            (_containsMethodInfo = new Func<IEnumerable<object>, object, bool>(Enumerable.Contains)
+            .GetMethodInfo().GetGenericMethodDefinition())).MakeGenericMethod(TSource);
 
         private static MethodInfo _thenByMethodInfo;
 

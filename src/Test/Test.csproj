@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EazyPageQuery\EazyPageQuery.csproj" />
+    <ProjectReference Include="..\UnitTestProject1\UnitTestProject1.csproj" />
   </ItemGroup>
 
 </Project>

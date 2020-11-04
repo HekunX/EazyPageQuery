@@ -1,8 +1,11 @@
 ﻿using EazyPageQuery;
 using EazyPageQuery.Basic;
+using EazyPageQuery.Basic.QueryModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnitTestProject1;
 
 namespace Test
 {
@@ -27,44 +30,29 @@ namespace Test
 
     public class TestQuery:IQuery,IOrder
     {
-        [OrderBy]
-        public int? Id { get; set; }
-        [OrderBy(Order = 1,OrderType = OrderType.Ascending)]
+        [DynamicJudge]
+        public EazyJudgeValue<int> Id { get; set; }
+
         public int? Id2 { get; set; }
-        [Like]
+
         public string? Name { get; set; }
     }
     class Program
     {
         static void Main(string[] args)
         {
-            List<Test> tests = new List<Test> { };
-            tests.Add(new Test 
+            EXISTSINQuery existsInQuery = new EXISTSINQuery
             {
-                Id = 1,
-                Id2 = 1,
-                Name = "hk"
-            });
-            tests.Add(new Test 
-            {
-                Id = 1,
-                Id2 = 2,
-                Name = "fyf"
-            });
-            tests.Add(new Test
-            {
-                Id = 2,
-                Id2 = 2,
-                Name = "zxc"
-            });
-
-            TestPageQuery query = new TestPageQuery
-            {
-                Ids = new List<int> { 2},
+                ClassIds = new List<int> { 1 }
             };
+            var students = DataStore.CreaetStudents();
+            var page = students.AsQueryable().PageQuery(existsInQuery);
+            page = students.AsQueryable().PageQuery(existsInQuery);
+            Assert.IsTrue(page.Rows.Count == 1 && page.Total == 1 && page.Rows[0].SeatId == 1);
 
-
-            var res = tests.AsQueryable().PageQuery(query);
+            existsInQuery.ClassIds = new List<int> { 2 };
+            page = students.AsQueryable().PageQuery(existsInQuery);
+            Assert.IsTrue(page.Rows.Count == 2 && page.Total == 2);
 
 
         }

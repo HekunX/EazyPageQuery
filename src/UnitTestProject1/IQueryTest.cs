@@ -2,6 +2,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using EazyPageQuery;
 using System.Linq;
 using System;
+using System.Collections.Generic;
+using EazyPageQuery.Basic.QueryModel;
+using EazyPageQuery.Basic;
 
 namespace UnitTestProject1
 {
@@ -198,7 +201,6 @@ namespace UnitTestProject1
             };
             var students = DataStore.CreaetStudents();
             var page = students.AsQueryable().PageQuery(likeQuery);
-
             Assert.IsTrue(page.Total == 2 && page.Rows.All(x => x.Address.Contains("ºþ±±")));
         }
 
@@ -213,5 +215,128 @@ namespace UnitTestProject1
             var page = students.AsQueryable().PageQuery(choiceOrderQuery);
             Assert.IsTrue(page.Rows.Count == 3 && page.Total == 3 && page.Rows[0].SeatId == 2);
         }
+
+        [TestMethod]
+        public void EXISTSINTest()
+        {
+            EXISTSINQuery existsInQuery = new EXISTSINQuery
+            {
+                ClassIds = new List<int> { 1}
+            };
+            var students = DataStore.CreaetStudents();
+            var page = students.AsQueryable().PageQuery(existsInQuery);
+            page = students.AsQueryable().PageQuery(existsInQuery);
+            Assert.IsTrue(page.Rows.Count == 1 && page.Total == 1 && page.Rows[0].SeatId == 1);
+
+            existsInQuery.ClassIds = new List<int> { 2};
+            page = students.AsQueryable().PageQuery(existsInQuery);
+            Assert.IsTrue(page.Rows.Count == 2 && page.Total == 2);
+        }
+
+        [TestMethod]
+        public void JudgeTypeTest()
+        {
+            DynamicJudgeTypeQuery judgeTypeQuery = new DynamicJudgeTypeQuery
+            {
+                Id = new EazyJudgeValue<int>
+                {
+                    Value = 1
+                }
+            };
+
+            var students = DataStore.CreaetStudents();
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.eq;
+            var page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 1 && page.Total == 1);
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.ge;
+            page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 3 && page.Total == 3);
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.gt;
+            page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 2 && page.Total == 2);
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.le;
+            page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 1 && page.Total == 1);
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.lt;
+            page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 0 && page.Total == 0);
+
+            judgeTypeQuery.Id.JudgeType = JudgeType.ne;
+            page = students.AsQueryable().PageQuery(judgeTypeQuery);
+            Assert.IsTrue(page.Rows.Count == 2 && page.Total == 2);
+
+            ErrorJudgeTypeQuery errorJudgeTypeQuery = new ErrorJudgeTypeQuery() { };
+            try
+            {
+                page = students.AsQueryable().PageQuery(errorJudgeTypeQuery);
+
+            }
+            catch(ArgumentNullException e)
+            {
+                StringAssert.Contains(e.Message,"Id");
+                return;
+            }
+            Assert.Fail($"The expected {nameof(PropertyTypeErrorException)} was not throw. ");
+        }
+        [TestMethod]
+
+        public void JudgeTypeTest2()
+        {
+            var students = DataStore.CreaetStudents();
+
+            ErrorJudgeTypeQuery errorJudgeTypeQuery = new ErrorJudgeTypeQuery() 
+            {
+                Id = "1"
+            };
+            try
+            {
+               var page = students.AsQueryable().PageQuery(errorJudgeTypeQuery);
+
+            }
+            catch (PropertyTypeErrorException e)
+            {
+                StringAssert.Contains(e.Message, "String");
+                return;
+            }
+            Assert.Fail($"The expected {nameof(PropertyTypeErrorException)} was not throw. ");
+        }
+
+        [TestMethod]
+        public void StaticJudgeTypeQueryTest()
+        {
+            StaticJudgeTypeQuery staticJudgeTypeQuery = new StaticJudgeTypeQuery
+            {
+                Id = 10
+            };
+
+            var students = DataStore.CreaetStudents();
+            var page = students.AsQueryable().PageQuery(staticJudgeTypeQuery);
+
+            Assert.IsTrue(page.Rows.Count == 0 && page.Total == 0) ;
+        }
+
+        [TestMethod]
+        public void StaticJudgeTypeQuery_NotFindErrorTest()
+        {
+            StaticJudgeTypeQuery_NotFindError staticJudgeTypeQuery_NotFindError = new StaticJudgeTypeQuery_NotFindError { };
+            var students = DataStore.CreaetStudents();
+            try
+            {
+                var page = students.AsQueryable().PageQuery(staticJudgeTypeQuery_NotFindError);
+            }
+            catch(PropertyNotFoundException e)
+            {
+                return;
+            }
+
+            Assert.Fail(GetNotThrowString(nameof(PropertyNotFoundException)));
+        }
+
+        public static string GetNotThrowString(string exceptionTypeName) => $"The expected {exceptionTypeName} was not throw. ";
     }
 }
