@@ -8,7 +8,7 @@
     <Description>The EazyPageQuery basic library</Description>
     <PackageTags>PageQuery</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>1.0.1-beta</Version>
+    <Version>1.0.2-beta</Version>
   </PropertyGroup>
 
   <ItemGroup>
