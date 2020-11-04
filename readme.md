@@ -14,6 +14,9 @@
     - [5.模糊查询](#5模糊查询)
     - [5.分页查询](#5分页查询)
     - [6.动态排序分页查询](#6动态排序分页查询)
+    - [7.集合查询](#7集合查询)
+    - [8.静态范围查询](#8静态范围查询)
+    - [9.动态范围查询](#9动态范围查询)
 - [作者](#作者)
 ***
 # EazyPageQuery（中文文档）
@@ -298,6 +301,38 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
         Page<Student> page = students.AsQueryable().PageQeury(studentPageQuery);
     }
 ```
+### 7.集合查询
+:pushpin:：按照约定，属性名默认为目标属性名，末尾加`s`，若想自定义查询实体属性名称，请使用`[QueryFor]`特性显示指定目标属性名。
+
+集合查询需要一个实现了IEnumrable接口的实例，如List，然后在该属性上添加`[EXISTSIN]`特性即可，如下所示
+```C#
+    public class StudentPageQuery:PageQuery
+    {
+        [EXISTSIN]
+        public IEnumerable<int> Ids { get; set; }
+        public int? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+        public string Address { get; set; }
+    }
+```
+使用以下查询命令，将分页查询所有Id在(1,2)集合中的数据。
+```C#
+    var students = dataSotre.Students;
+    StudentPageQuery studentPageQuery = new StudentPageQuery
+    {
+        PageSize = 10,
+        CurrentPage = 1,
+        Ids = new List<int> {1,2}
+    };
+    Page<Student> page = students.PageQuery(studentPageQuery);
+```
+### 8.静态范围查询
+待补充......
+### 9.动态范围查询
+待补充......
+
 # 作者
 白烟染黑墨
 邮箱：935467953@qq.com

@@ -8,16 +8,58 @@ namespace ConsoleApp1
 {
     class Program
     {
+        
+        public static List<Student> GetStudents()
+        {
+            List<Student> students = new List<Student>()
+            {
+                new Student
+                {
+                    Id = 1,
+                    Address = "湖南衡阳",
+                    ClassId = 1,
+                    CreateTime = DateTime.Now,
+                    Name = "张三",
+                    SeatId = 1
+                },
+                new Student
+                {
+                    Id = 2,
+                    Address = "湖北荆州",
+                    ClassId = 2,
+                    CreateTime = DateTime.Now,
+                    Name = "李四",
+                    SeatId = 1
+                },
+                new Student
+                {
+                    Id = 3,
+                    Address = "湖北荆州",
+                    ClassId = 2,
+                    CreateTime = DateTime.Now,
+                    Name = "王五",
+                    SeatId = 2
+                },
+            };
+            return students;
+        }
         static void Main(string[] args)
         {
-            List<Student> students = DataStore.CreaetStudents();
+            var dataSotre = new DataStore();
+            if(dataSotre.Students.Count() == 0)
+            {
+                dataSotre.Students.AddRange(GetStudents());
+                dataSotre.SaveChanges();
+            }
+
+            var students = dataSotre.Students;
             StudentPageQuery studentPageQuery = new StudentPageQuery
             {
                 PageSize = 10,
                 CurrentPage = 1,
-                IdIsAsc = false
+                Ids = new List<int> {1,2 }
             };
-            Page<Student> page = students.AsQueryable().PageQeury(studentPageQuery);
+            Page<Student> page = students.PageQuery(studentPageQuery);
         }
     }
 }
