@@ -17,6 +17,7 @@
     - [7.集合查询](#7集合查询)
     - [8.静态范围查询](#8静态范围查询)
     - [9.动态范围查询](#9动态范围查询)
+- [默认约定](#默认约定)
 - [作者](#作者)
 ***
 # EazyPageQuery（中文文档）
@@ -302,7 +303,7 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
     }
 ```
 ### 7.集合查询
-:pushpin:：按照约定，属性名默认为目标属性名，末尾加`s`，若想自定义查询实体属性名称，请使用`[QueryFor]`特性显示指定目标属性名。
+:pushpin:：按照约定，查询实体属性名默认为目标属性名，末尾加`s`，若想自定义查询实体属性名称，请使用`[QueryFor]`特性显示指定目标属性名。
 
 集合查询需要一个实现了IEnumrable接口的实例，如List，然后在该属性上添加`[EXISTSIN]`特性即可，如下所示
 ```C#
@@ -329,10 +330,74 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
     Page<Student> page = students.PageQuery(studentPageQuery);
 ```
 ### 8.静态范围查询
-待补充......
+使用特性`[Judge]`便可指定静态范围查询，JudgeType可选枚举值如下：
+枚举值|意义
+:--:|:--:
+eq|等于
+ne|不等于
+lt|小于
+le|小于等于
+gt|大于
+ge|大于等于
+ne|不等于
+查询实体如下：
+```C#
+    public class StudentPageQuery:PageQuery
+    {
+        [Judge(JudgeType = JudgeType.ne)]
+        public int Id { get; set; }
+        public int? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+        public string Address { get; set; }
+    }
+```
+使用以下查询命令，将查询Id不等于`1`的学生
+```C#
+    var students = dataSotre.Students;
+    StudentPageQuery studentPageQuery = new StudentPageQuery
+    {
+        PageSize = 10,
+        CurrentPage = 1,
+        Id = 1
+    };
+    Page<Student> page = students.PageQuery(studentPageQuery);
+```
 ### 9.动态范围查询
-待补充......
-
+动态范围查询可动态指定判断类型，使用时需要用到一个泛型包装类——`EazyJudgeValue`，使用该类型定义属性，并在此属性上添加`[DynamicJudge]`特性，如下所示。
+```C#
+    public class StudentPageQuery:PageQuery
+    {
+        [DynamicJudge]
+        public EazyJudgeValue<int> Id { get; set; }
+        public int? ClassId { get; set; }
+        public int? SeatId { get; set; }
+        public string Name { get; set; }
+        public DateTime? CreateTime { get; set; }
+        public string Address { get; set; }
+    }
+```
+使用以下查询命令，将查询`Id >= 1`的学生。
+```C#
+    var students = dataSotre.Students;
+    StudentPageQuery studentPageQuery = new StudentPageQuery
+    {
+        PageSize = 10,
+        CurrentPage = 1,
+        Id = new EazyPageQuery.Basic.QueryModel.EazyJudgeValue<int> 
+        {
+            JudgeType = JudgeType.ge,
+            Value = 1
+        }
+    };
+    Page<Student> page = students.PageQuery(studentPageQuery)
+```
+# 默认约定
+查询类型 | 是否需要特性 | 需要的特性 | 默认属性命名规则 | 查询属性类型| 是否支持自定义属性名
+:--: | :--: | :--: | :--: | :--: | :--: 
+过滤查询 | :heavy_multiplication_x: | -- | 与目标属性名相同 | 为目标属性类型的可空类型 | :heavy_check_mark:
+静态排序查询 | :heavy_check_mark: | OrderBy | 与目标属性名相同 | 与目标属性类型相同 | :heavy_check_mark:
 # 作者
 白烟染黑墨
 邮箱：935467953@qq.com

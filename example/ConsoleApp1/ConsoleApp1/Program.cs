@@ -57,7 +57,11 @@ namespace ConsoleApp1
             {
                 PageSize = 10,
                 CurrentPage = 1,
-                Ids = new List<int> {1,2 }
+                Id = new EazyPageQuery.Basic.QueryModel.EazyJudgeValue<int> 
+                {
+                    JudgeType = JudgeType.ge,
+                    Value = 1
+                }
             };
             Page<Student> page = students.PageQuery(studentPageQuery);
         }

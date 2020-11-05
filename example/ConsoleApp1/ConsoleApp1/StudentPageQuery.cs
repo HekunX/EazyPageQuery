@@ -8,8 +8,8 @@ namespace ConsoleApp1
 {
     public class StudentPageQuery:PageQuery
     {
-        [EXISTSIN]
-        public IEnumerable<int> Ids { get; set; }
+        [DynamicJudge]
+        public EazyJudgeValue<int> Id { get; set; }
         public int? ClassId { get; set; }
         public int? SeatId { get; set; }
         public string Name { get; set; }
