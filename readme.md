@@ -17,7 +17,7 @@
     - [7.集合查询](#7集合查询)
     - [8.静态范围查询](#8静态范围查询)
     - [9.动态范围查询](#9动态范围查询)
-- [默认约定](#默认约定)
+- [默认约定参照表](#默认约定参照表)
 - [作者](#作者)
 ***
 # EazyPageQuery（中文文档）
@@ -340,6 +340,7 @@ le|小于等于
 gt|大于
 ge|大于等于
 ne|不等于
+
 查询实体如下：
 ```C#
     public class StudentPageQuery:PageQuery
@@ -393,11 +394,16 @@ ne|不等于
     };
     Page<Student> page = students.PageQuery(studentPageQuery)
 ```
-# 默认约定
+# 默认约定参照表
 查询类型 | 是否需要特性 | 需要的特性 | 默认属性命名规则 | 查询属性类型| 是否支持自定义属性名
 :--: | :--: | :--: | :--: | :--: | :--: 
-过滤查询 | :heavy_multiplication_x: | -- | 与目标属性名相同 | 为目标属性类型的可空类型 | :heavy_check_mark:
+过滤查询 | :heavy_multiplication_x: | 无 | 与目标属性名相同 | 为目标属性类型的可空类型 | :heavy_check_mark:
 静态排序查询 | :heavy_check_mark: | OrderBy | 与目标属性名相同 | 与目标属性类型相同 | :heavy_check_mark:
+动态排序查询 | :heavy_check_mark: | OrderChoice | 目标属性名+'IsAsc' | Boolean | :heavy_check_mark:
+模糊查询 | :heavy_check_mark: | Like | 与目标属性名相同 | String | :heavy_check_mark:
+集合查询 | :heavy_check_mark: | EXISTSIN | 目标属性名+'s' | IEnumerable\<T> (T为目标类型) | :heavy_check_mark:
+静态范围查询 | :heavy_check_mark: | Judge | 与目标属性名相同 | 与目标属性类型相同 | :heavy_check_mark:
+动态范围查询 | :heavy_check_mark: | DynamicJudge | 与目标属性名相同 | EazyJudgeValue\<T> (T为目标类型) | :heavy_check_mark:
 # 作者
 白烟染黑墨
 邮箱：935467953@qq.com
