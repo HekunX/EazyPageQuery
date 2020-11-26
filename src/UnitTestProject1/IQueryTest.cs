@@ -14,7 +14,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestQueryOne()
         {
-            //²éÑ¯IdÎª1µÄÍ¬Ñ§ÁĞ±í
+            //æŸ¥è¯¢Idä¸º1çš„åŒå­¦åˆ—è¡¨
             StudentQuery studentQuery = new StudentQuery
             {
                 Id = 1
@@ -28,7 +28,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestQueryMany()
         {
-            //²éÑ¯°à¼¶IdÎª2µÄÍ¬Ñ§
+            //æŸ¥è¯¢ç­çº§Idä¸º2çš„åŒå­¦
             StudentQuery studentQuery = new StudentQuery
             {
                 ClassId = 2
@@ -41,7 +41,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestQueryMany2()
         {
-            //²éÑ¯°à¼¶IdÎª2ÇÒ×ùÎ»IdÎª1µÄÍ¬Ñ§
+            //æŸ¥è¯¢ç­çº§Idä¸º2ä¸”åº§ä½Idä¸º1çš„åŒå­¦
             StudentQuery studentQuery = new StudentQuery
             {
                 SeatId = 1,
@@ -57,7 +57,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestOrderBy()
         {
-            //°´´´½¨Ê±¼äÅÅĞò
+            //æŒ‰åˆ›å»ºæ—¶é—´æ’åº
             StudentOrderByCreateTimeQuery studentOrderByCreateTimeQuery = new StudentOrderByCreateTimeQuery
             {
 
@@ -90,7 +90,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void TestMutiOrder()
         {
-            //ÏÈ°´ÕÕ°à¼¶ºÅÉıĞòÅÅÁĞ£¬È»ºó°´ÕÕ×ùÎ»ºÅ½µĞòÅÅÁĞ
+            //å…ˆæŒ‰ç…§ç­çº§å·å‡åºæ’åˆ—ï¼Œç„¶åæŒ‰ç…§åº§ä½å·é™åºæ’åˆ—
             StudentMutiOrder studentMutiOrder = new StudentMutiOrder
             {
                 
@@ -106,7 +106,7 @@ namespace UnitTestProject1
         [TestMethod]
         public void QueryForAttributeTest()
         {
-            //²éÑ¯IdÎª1µÄÑ§Éú
+            //æŸ¥è¯¢Idä¸º1çš„å­¦ç”Ÿ
             StudentQueryForQueryFor studentQueryForQueryFor = new StudentQueryForQueryFor
             {
                 StudentId = 1
@@ -124,17 +124,17 @@ namespace UnitTestProject1
             {
                 PageSize = 10,
                 CurrentPage = 1,
-                Address = "ºşÄÏºâÑô"
+                Address = "æ¹–å—è¡¡é˜³"
             };
             var students = DataStore.CreaetStudents();
             var page = students.AsQueryable().PageQuery(studentPageQuery);
-            Assert.IsTrue(page.CurrentPage == 1 && page.PageSize == 10 && page.Total == 1 && page.Rows[0].Address == "ºşÄÏºâÑô");
+            Assert.IsTrue(page.CurrentPage == 1 && page.PageSize == 10 && page.Total == 1 && page.Rows[0].Address == "æ¹–å—è¡¡é˜³");
         }
 
         [TestMethod]
         public void QueryForNotFoundTest()
         {
-            //²éÑ¯IdÎª1µÄÑ§Éú
+            //æŸ¥è¯¢Idä¸º1çš„å­¦ç”Ÿ
             StudentPageQueryNotFound studentQueryForQueryFor = new StudentPageQueryNotFound
             {
                 StudentId = 1
@@ -197,11 +197,11 @@ namespace UnitTestProject1
         {
             LikeQuery likeQuery = new LikeQuery
             {
-                Address = "ºş±±"
+                Address = "æ¹–åŒ—"
             };
             var students = DataStore.CreaetStudents();
             var page = students.AsQueryable().PageQuery(likeQuery);
-            Assert.IsTrue(page.Total == 2 && page.Rows.All(x => x.Address.Contains("ºş±±")));
+            Assert.IsTrue(page.Total == 2 && page.Rows.All(x => x.Address.Contains("æ¹–åŒ—")));
         }
 
         [TestMethod]
