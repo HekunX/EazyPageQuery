@@ -28,5 +28,6 @@ jobs:
       working-directory: ./src/EazyPageQuery/
       run: |
         echo $GITHUB_REF
+        GITHUB_WORKFLOW
         
         
