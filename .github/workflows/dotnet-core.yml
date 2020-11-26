@@ -24,5 +24,6 @@ jobs:
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        echo $GITHUB_REF
+        $e = v1.1.1;echo $e.Substring(1)
+        
         
