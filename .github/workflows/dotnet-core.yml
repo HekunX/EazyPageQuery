@@ -20,6 +20,7 @@ jobs:
     - run: ls
     - name: SwitchWorkDic
       run: cd ./src/
+    - run: ls
     - name: Install dependencies
       run: dotnet restore
     - name: Build
