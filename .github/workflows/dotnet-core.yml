@@ -17,13 +17,12 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.301
-    - run: ls
-    - name: SwitchWorkDic
-      run: cd ./src/
-    - run: ls
     - name: Install dependencies
+      working-directory: ./src/
       run: dotnet restore
     - name: Build
+      working-directory: ./src/
       run: dotnet build --configuration Release --no-restore
     - name: Test
+      working-directory: ./src/
       run: dotnet test --no-restore --verbosity normal
