@@ -4,8 +4,8 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackageIcon>logo.png</PackageIcon>
     <Description>Create a page-query command easily for EF!</Description>
-    <Version>1.0.4-beta</Version>
-    <PackageTags>Page-Qeury;EF</PackageTags>
+    <Version>$(Version)</Version>
+    <PackageTags>Page-Qeury;EF;</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
