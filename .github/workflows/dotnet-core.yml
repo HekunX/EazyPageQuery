@@ -1,14 +1,15 @@
 name: .NET Core
-on: [workflow_dispatch]
+on: 
+  push:
+    tags: 
+      - v*
 defaults:
   run:
     working-directory: ./src/
     shell: pwsh
 jobs:
   build:
-
     runs-on: windows-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -24,7 +25,8 @@ jobs:
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        $env:Version = 'v1.1.1';echo $env:Version.Substring(1)
+        echo $GITHUB_REF.Substring(1)
+        $env:Version = echo $GITHUB_REF.Substring(1);
         dotnet pack
         
         
