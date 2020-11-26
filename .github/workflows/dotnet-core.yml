@@ -2,14 +2,16 @@ name: .NET Core
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
+    tags: 
+      -v*
+defaults:
+  run:
+    working-directory: ./src/
+    shell: pwsh
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -18,11 +20,13 @@ jobs:
       with:
         dotnet-version: 3.1.301
     - name: Install dependencies
-      working-directory: ./src/
       run: dotnet restore
     - name: Build
-      working-directory: ./src/
       run: dotnet build --configuration Release --no-restore
     - name: Test
-      working-directory: ./src/
       run: dotnet test --no-restore --verbosity normal
+    - name: Pack
+      working-directory: ./src/EazyPageQuery/
+      run: |
+        echo $GITHUB_REF
+        
