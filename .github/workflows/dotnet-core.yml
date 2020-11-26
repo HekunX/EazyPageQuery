@@ -28,7 +28,5 @@ jobs:
       working-directory: ./src/EazyPageQuery/
       run: |
         echo $GITHUB_REF
-        $env:Version = echo $GITHUB_REF.Substring(1);
-        dotnet pack
         
         
