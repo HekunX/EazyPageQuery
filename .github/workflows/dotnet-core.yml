@@ -2,8 +2,8 @@ name: .NET Core
 on: 
   push:
     tags: 
-      - v*
-        - 
+      - v**
+      
 defaults:
   run:
     working-directory: ./src/
