@@ -1,9 +1,5 @@
 name: .NET Core
-
-on:
-  push:
-    tags: 
-      - v*
+on: [workflow_dispatch]
 defaults:
   run:
     working-directory: ./src/
