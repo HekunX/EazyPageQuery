@@ -24,6 +24,7 @@ jobs:
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        $e = 'v1.1.1';echo $e.Substring(1)
+        $env:Version = 'v1.1.1';echo $e.Substring(1)
+        dotnet pack
         
         
