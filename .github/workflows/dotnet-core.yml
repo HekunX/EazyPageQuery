@@ -3,10 +3,12 @@ on:
   push:
     tags: 
       - v*
+        - 
 defaults:
   run:
     working-directory: ./src/
     shell: pwsh
+    
 jobs:
   build:
     runs-on: windows-latest
