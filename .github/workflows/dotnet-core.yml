@@ -24,10 +24,13 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+    - name: Get tag
+      id: tag
+      uses: dawidd6/action-get-tag@v1
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        $env:Version = ($env:GITHUB_REF).Substring(1)
+        $env:Version = ${{steps.tag.outputs.tag}}.Substring(1)
         dotnet pack -c Release
         
         
