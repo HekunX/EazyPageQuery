@@ -1,5 +1,8 @@
 name: .NET Core
-on: [workflow_dispatch]
+on: 
+  push:
+    tags: 
+      - v*
       
 defaults:
   run:
@@ -24,7 +27,7 @@ jobs:
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        echo $GITHUB_REF
-        echo $GITHUB_WORKFLOW
+        $env:Version = ($env:GITHUB_REF).Substring(1)
+        dotnet pack -c Release
         
         
