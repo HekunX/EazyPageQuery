@@ -30,7 +30,7 @@ jobs:
     - name: Pack
       working-directory: ./src/EazyPageQuery/
       run: |
-        $env:Version = ${{steps.tag.outputs.tag}}.Substring(1)
+        $env:Version = '${{steps.tag.outputs.tag}}'.Substring(1)
         dotnet pack -c Release
         
         
