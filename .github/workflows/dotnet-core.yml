@@ -31,8 +31,8 @@ jobs:
         working-directory: ./src/EazyPageQuery/
         run: |
           $env:Version = '${{steps.tag.outputs.tag}}'.Substring(1)
-          dotnet pack -c Release -o ./nuget
-          dotnet nuget push "./nuget/*.nupkg" --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
+          dotnet pack -c Release -o ./
+          dotnet nuget push *.nupkg --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
 
 
 
