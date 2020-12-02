@@ -32,7 +32,7 @@ jobs:
         run: |
           $env:Version = '${{steps.tag.outputs.tag}}'.Substring(1)
           dotnet pack -c Release -o ./nuget
-          dotnet push "./nuget/*.nupkg" --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
+          dotnet nuget push "./nuget/*.nupkg" --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
 
 
 
