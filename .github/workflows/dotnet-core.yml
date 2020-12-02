@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Test
         run: dotnet test --no-restore --verbosity normal
+      - name : test2
+        run : echo 1
 
   Publish:
     runs-on: windows-latest
