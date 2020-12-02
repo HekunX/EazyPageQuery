@@ -13,24 +13,35 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.301
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
-    - name: Get tag
-      id: tag
-      uses: dawidd6/action-get-tag@v1
-    - name: Pack
-      working-directory: ./src/EazyPageQuery/
-      run: |
-        $env:Version = '${{steps.tag.outputs.tag}}'.Substring(1)
-        dotnet pack -c Release
-        
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+  Test:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+
+  Publish:
+    runs-on: windows-latest
+    needs: Test
+    steps:
+      - name: Get tag
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+      - name: Pack
+        working-directory: ./src/EazyPageQuery/
+        run: |
+          $env:Version = '${{steps.tag.outputs.tag}}'.Substring(1)
+          dotnet pack -c Release -o ./nuget
+          dotnet push "*.nupkg" --api-key ${{secrets.NUGETAPIKEY}} --source https://api.nuget.org/v3/index.json
+
         
