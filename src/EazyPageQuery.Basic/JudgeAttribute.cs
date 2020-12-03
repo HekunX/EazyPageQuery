@@ -13,27 +13,27 @@ namespace EazyPageQuery.Basic
         /// <summary>
         /// 大于(greater than)
         /// </summary>
-        gt,
+        gt = 0,
         /// <summary>
         /// 等于(equal to)
         /// </summary>
-        eq,
+        eq = 1,
         /// <summary>
         /// 小于(less than)
         /// </summary>
-        lt,
+        lt = 2,
         /// <summary>
         /// 小于等于(less than or equal to)
         /// </summary>
-        le,
+        le = 3,
         /// <summary>
         /// 不等于(not equal to)
         /// </summary>
-        ne,
+        ne = 4,
         /// <summary>
         /// 大于或等于 (greater than or equal to)
         /// </summary>
-        ge
+        ge = 5
     }
     public class JudgeAttribute:Attribute
     {

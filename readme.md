@@ -1,6 +1,4 @@
-# 目录
-***
-- [目录](#目录)
+# 目录 <!-- omit in toc -->
 - [EazyPageQuery（中文文档）](#eazypagequery中文文档)
   - [特点](#特点)
   - [开始使用](#开始使用)
@@ -19,7 +17,6 @@
     - [9.动态范围查询](#9动态范围查询)
 - [默认约定参照表](#默认约定参照表)
 - [作者](#作者)
-***
 # EazyPageQuery（中文文档）
 
 Create The Page-Query Command easily For EntityFramework and EF Core!
@@ -34,6 +31,21 @@ Create The Page-Query Command easily For EntityFramework and EF Core!
 | NuGet | Status|
 |--| -- |
 |[![](https://img.shields.io/nuget/v/EazyPageQuery)](https://www.nuget.org/packages/EazyPageQuery)| ![example workflow name](https://github.com/HekunX/EazyPageQuery/workflows/.NET%20Core/badge.svg?branch=main)|
+***
+&emsp;&emsp;若想快速上手，使用如下命令安装Demo模板即可。
+```Shell
+dotnet new -i EazyPageQuery.Demo.Templates
+```
+&emsp;&emsp;然后在您想要创建解决方案的目录下使用如下命令
+```Shell
+dotnet new EazyDemo
+```
+&emsp;&emsp;等待模板安装完毕，在当前目录下，使用如下命令运行Demo
+```Shell
+dotnet run --project .\Demo\
+```
+&emsp;&emsp;默认监听`http://localhost:5000`，访问该地址将跳转到SwaggerUI页面。
+***
 ### 1.首先创建一个实体类
 ```C#
     public class Student
