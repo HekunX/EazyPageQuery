@@ -10,6 +10,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Version>1.0.4</Version>
     <RepositoryUrl>https://github.com/HekunX/EazyPageQuery</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/HekunX/EazyPageQuery</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
