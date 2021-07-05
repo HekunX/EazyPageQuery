@@ -6,6 +6,7 @@
     <Description>Create a page-query command easily for EF!</Description>
     <Version>$(Version)</Version>
     <PackageTags>Page-Qeury;EF;</PackageTags>
+    <RepositoryUrl>https://github.com/HekunX/EazyPageQuery</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

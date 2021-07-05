@@ -41,18 +41,12 @@ namespace Test
     {
         static void Main(string[] args)
         {
-            EXISTSINQuery existsInQuery = new EXISTSINQuery
+            TestQuery testQuery = new TestQuery
             {
-                ClassIds = new List<int> { 1 }
+
             };
             var students = DataStore.CreaetStudents();
-            var page = students.AsQueryable().PageQuery(existsInQuery);
-            page = students.AsQueryable().PageQuery(existsInQuery);
-            Assert.IsTrue(page.Rows.Count == 1 && page.Total == 1 && page.Rows[0].SeatId == 1);
-
-            existsInQuery.ClassIds = new List<int> { 2 };
-            page = students.AsQueryable().PageQuery(existsInQuery);
-            Assert.IsTrue(page.Rows.Count == 2 && page.Total == 2);
+            var page = students.AsQueryable().Where(testQuery).ToList();
 
 
         }

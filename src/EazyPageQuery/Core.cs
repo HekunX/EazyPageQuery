@@ -67,9 +67,9 @@ namespace EazyPageQuery
                     var rightExp = Expression.Convert(Expression.Property(Expression.Constant(query), queryProp), desProp.PropertyType);
                     conditionExp = Expression.AndAlso(GetJudgeExpression(leftExp,rightExp,judgeAttribute.JudgeType), conditionExp);
                 }
-                else if (queryProp.IsDefined(typeof(DynamicJudgeAttribute)))
+                else if (queryProp.PropertyType.IsGenericType && queryProp.PropertyType.GetGenericTypeDefinition() == typeof(EazyJudgeValue<>))
                 {
-                    ExceptionHelper.ThrowArgNullExceptionIfNull(queryProp.Name, queryPropValue);
+                    if (queryPropValue is null) continue;
                     if (!queryProp.PropertyType.IsGenericType || queryProp.PropertyType.GetGenericTypeDefinition() != typeof(EazyJudgeValue<>)) ExceptionHelper.ThrowPropertyTypeError($"property type must be derived from EazyJudgeValue! Your type is {queryProp.PropertyType}");
                     object eazyValue = queryProp.GetValue(query);
                     var props = eazyValue.GetType().GetProperties();

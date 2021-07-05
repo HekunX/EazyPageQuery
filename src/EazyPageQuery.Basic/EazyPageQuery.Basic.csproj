@@ -9,6 +9,7 @@
     <PackageTags>PageQuery</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Version>$(Version)</Version>
+    <RepositoryUrl>https://github.com/HekunX/EazyPageQuery</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
