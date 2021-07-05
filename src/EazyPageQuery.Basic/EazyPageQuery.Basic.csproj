@@ -8,7 +8,7 @@
     <Description>The EazyPageQuery basic library</Description>
     <PackageTags>PageQuery</PackageTags>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Version>v1.0.4</Version>
+    <Version>1.0.4</Version>
     <RepositoryUrl>https://github.com/HekunX/EazyPageQuery</RepositoryUrl>
   </PropertyGroup>
 
