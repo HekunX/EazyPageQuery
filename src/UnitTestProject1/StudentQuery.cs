@@ -129,7 +129,7 @@ namespace UnitTestProject1
     public class StaticJudgeTypeQuery : PageQuery
     {
         [Judge(JudgeType = JudgeType.eq)]
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? ClassId { get; set; }
         public int? SeatId { get; set; }
         public string Name { get; set; }

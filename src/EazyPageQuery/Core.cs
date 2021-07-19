@@ -31,7 +31,7 @@ namespace EazyPageQuery
             foreach (var queryProp in queryPropertyInfos)
             {
                 object queryPropValue = queryProp.GetValue(query);
-                if (queryProp.IsDefined(typeof(NoQueryAttribute)) || (queryProp.CustomAttributes.Count() == 0 && queryPropValue == null)) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
+                if (queryProp.IsDefined(typeof(NoQueryAttribute)) || (queryPropValue == null)) continue;  //如果该值不为NULL，如果为NULL则不生成表达式
                 if (queryProp.IsDefined(typeof(OrderChoiceAttribute))) continue;
 
                 PropertyInfo desProp = null;

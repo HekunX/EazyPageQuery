@@ -245,6 +245,11 @@ namespace UnitTestProject1
             var page = students.AsQueryable().PageQuery(staticJudgeTypeQuery);
 
             Assert.IsTrue(page.Rows.Count == 0 && page.Total == 0) ;
+
+            staticJudgeTypeQuery.Id = null;
+            page = students.AsQueryable().PageQuery(staticJudgeTypeQuery);
+
+            Assert.IsTrue(page.Rows.Count == students.Count);
         }
 
         [TestMethod]
